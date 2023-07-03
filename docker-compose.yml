@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  media:
+    container_name: "media"
+    build:
+      context: .
+      dockerfile: Dev.Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - mediafiles_volume:/media_content
+      - .:/uploader
+    ports:
+      - "3457:3457"
+
+  dbMedia:
+    container_name: "dbMedia"
+    image: postgres:14.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=${MEDIA_POSTGRES_DB}
+      - POSTGRES_USER=${MEDIA_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${MEDIA_POSTGRES_PASSWORD}
+      - PGPORT=${MEDIA_POSTGRES_PORT}
+    env_file:
+      - .env
+    volumes:
+      - media_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "3456:3456"
+
+volumes:
+  media_postgres_data:
+  mediafiles_volume:
